@@ -71,7 +71,7 @@ public class LocationSender extends AttachmentSender {
         // If the correct Google Play Services are available, connect and return. 
         if (errorCode == ConnectionResult.SUCCESS) {
             GoogleApiCallbacks googleApiCallbacks = new GoogleApiCallbacks();
-            sGoogleApiClient = new GoogleApiClient.Builder(activity)
+            sGoogleApiClient = new GoogleApiClient.Builder(activity.getApplicationContext())
                     .addConnectionCallbacks(googleApiCallbacks)
                     .addOnConnectionFailedListener(googleApiCallbacks)
                     .addApi(LocationServices.API)
