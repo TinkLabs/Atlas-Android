@@ -10,12 +10,12 @@ ext.artifactIdName = 'layer-atlas'
 group 'com.layer.atlas'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 23
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionName = "${version}"
     }
 
@@ -37,6 +37,8 @@ ext {
     org = "layerhq"
     repo = "Atlas-Android"
     groupFolder = "com/layer/atlas"
+    supportVersion = rootProject.ext.supportVersion
+    playServicesVersion = rootProject.ext.playServicesVersion
 }
 
 dependencies {
@@ -47,10 +49,10 @@ dependencies {
     compile 'org.slf4j:slf4j-nop:1.7.2'
 
     // Google Cloud Messaging
-    compile 'com.google.android.gms:play-services-gcm:9.2.0'
+    compile "com.google.android.gms:play-services-gcm:$playServicesVersion"
 
     // Google Location
-    compile 'com.google.android.gms:play-services-location:9.2.0'
+    compile "com.google.android.gms:play-services-location:$playServicesVersion"
 
     // Image cache and loading
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -59,9 +61,9 @@ dependencies {
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
 
     // Android UI
-    compile 'com.android.support:recyclerview-v7:23.1.1'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
+    compile "com.android.support:recyclerview-v7:$supportVersion"
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:design:$supportVersion"
 }
 
 def sdkPom() {
