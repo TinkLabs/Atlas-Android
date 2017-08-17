@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.layer.atlas.R;
 import com.layer.atlas.messagetypes.AtlasCellFactory;
@@ -62,7 +64,13 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
 
     @Override
     public CellHolder createCellHolder(ViewGroup cellView, boolean isMe, LayoutInflater layoutInflater) {
-        return new CellHolder(layoutInflater.inflate(R.layout.atlas_message_item_cell_image, cellView, true));
+        View view = layoutInflater.inflate(R.layout.atlas_message_item_cell_image, cellView, true);
+
+        TextView time = (TextView) view.findViewById(R.id.cell_time);
+        time.setTypeface(isMe ? mMessageStyle.getMyTextTypeface() : mMessageStyle.getOtherTextTypeface(), isMe ? mMessageStyle.getMyTextStyle() : mMessageStyle.getOtherTextStyle());
+        time.setTextColor(time.getContext().getResources().getColor(R.color.grey_light));
+
+        return new CellHolder(view);
     }
 
     @Override
@@ -108,6 +116,14 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
                 cellHolder.mProgressBar.hide();
             }
         });
+
+        if (message.getSentAt() != null) {
+            String relativeDate = ((String) DateUtils.getRelativeTimeSpanString(message.getSentAt().getTime(),System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
+            cellHolder.mTime.setText(relativeDate);
+            cellHolder.mTime.setVisibility(View.VISIBLE);
+        } else {
+            cellHolder.mTime.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -145,10 +161,12 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
     static class CellHolder extends AtlasCellFactory.CellHolder {
         ImageView mImageView;
         ContentLoadingProgressBar mProgressBar;
+        TextView mTime;
 
         public CellHolder(View view) {
             mImageView = (ImageView) view.findViewById(R.id.cell_image);
             mProgressBar = (ContentLoadingProgressBar) view.findViewById(R.id.cell_progress);
+            mTime = (TextView) view.findViewById(R.id.cell_time);
         }
     }
 }

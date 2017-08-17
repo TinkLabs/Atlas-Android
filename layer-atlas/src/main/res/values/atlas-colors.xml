@@ -15,6 +15,8 @@
 -->
 <resources>
 
+    <color name="grey_light">#999999</color>
+
     <color name="atlas_color_primary_blue">#FF21AAE1</color>
     <color name="atlas_color_dark_blue">#FF198BB8</color>
     <color name="atlas_color_primary_gray">#FFEBEBEB</color>
