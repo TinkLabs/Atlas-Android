@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.layer.atlas.R;
@@ -121,6 +123,12 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
             String relativeDate = ((String) DateUtils.getRelativeTimeSpanString(message.getSentAt().getTime(),System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
             cellHolder.mTime.setText(relativeDate);
             cellHolder.mTime.setVisibility(View.VISIBLE);
+
+            if (specs.isMe) {
+                ((LinearLayout.LayoutParams) cellHolder.mTime.getLayoutParams()).gravity = Gravity.END;
+            } else {
+                ((LinearLayout.LayoutParams) cellHolder.mTime.getLayoutParams()).gravity = Gravity.START;
+            }
         } else {
             cellHolder.mTime.setVisibility(View.GONE);
         }
