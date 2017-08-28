@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
 import com.layer.atlas.R;
@@ -49,7 +50,7 @@ public class CameraSender extends AttachmentSender {
         File file = new File(getContext().getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES), fileName);
         mPhotoFilePath.set(file.getAbsolutePath());
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        final Uri outputUri = Uri.fromFile(file);
+        final Uri outputUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".commons.provider.fileprovider", file);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
         activity.startActivityForResult(cameraIntent, ACTIVITY_REQUEST_CODE);
     }
