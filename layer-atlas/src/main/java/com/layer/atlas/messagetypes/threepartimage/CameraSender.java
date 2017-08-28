@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.widget.Toast;
 
 import com.layer.atlas.R;
 import com.layer.atlas.messagetypes.AttachmentSender;
@@ -81,6 +82,9 @@ public class CameraSender extends AttachmentSender {
             send(message);
         } catch (IOException e) {
             if (Log.isLoggable(Log.ERROR)) Log.e(e.getMessage(), e);
+        } catch (IllegalArgumentException iae) {
+            if (Log.isLoggable(Log.ERROR)) Log.e(iae.getMessage(), iae);
+            Toast.makeText(activity, R.string.atlas_image_error, Toast.LENGTH_SHORT).show();
         }
         return true;
     }

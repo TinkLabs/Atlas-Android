@@ -54,5 +54,6 @@
 
     <string name="atlas_message_composer_hint">Message</string>
     <string name="atlas_message_composer_send_button">SEND</string>
+    <string name="atlas_image_error">Image File Corrupted. Please try again.</string>
 
 </resources>
