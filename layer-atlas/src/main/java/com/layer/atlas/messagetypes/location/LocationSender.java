@@ -9,6 +9,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.RequiresPermission;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -42,12 +46,14 @@ import static android.support.v4.content.ContextCompat.checkSelfPermission;
  */
 public class LocationSender extends AttachmentSender {
     private static final String PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final int ACTIVITY_REQUEST_CODE = 30;
-    public static final int PERMISSION_REQUEST_CODE = 31;
+    public static final int ACTIVITY_REQUEST_CODE = 30;
+    private static final int PERMISSION_REQUEST_CODE = 31;
 
     private static GoogleApiClient sGoogleApiClient;
 
     private WeakReference<Activity> mActivity = new WeakReference<Activity>(null);
+
+    private String mMapType = "google";
 
     public LocationSender(int titleResId, Integer iconResId, Activity activity) {
         this(activity.getString(titleResId), iconResId, activity);
@@ -114,6 +120,29 @@ public class LocationSender extends AttachmentSender {
         return false;
     }
 
+    private boolean getFreshBaiduLocation(final SenderLocationListener senderLocationListener) {
+        LocationClient locationClient = new LocationClient(mActivity.get().getApplicationContext());
+        locationClient.registerLocationListener(new BDLocationListener() {
+            @Override
+            public void onReceiveLocation(BDLocation bdLocation) {
+                Location location = new Location("HandyProvider");
+                location.setLatitude(bdLocation.getLatitude());
+                location.setLongitude(bdLocation.getLongitude());
+                senderLocationListener.onLocationChanged(location);
+            }
+        });
+
+        LocationClientOption lcOption = new LocationClientOption();
+        // bd09ll - Baidu Coordination
+        lcOption.setCoorType("bd09ll");
+        lcOption.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+        lcOption.setOpenGps(true);
+        locationClient.setLocOption(lcOption);
+        locationClient.start();
+
+        return true;
+    }
+
     @RequiresPermission(PERMISSION)
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -138,7 +167,13 @@ public class LocationSender extends AttachmentSender {
             requestPermissions(activity, new String[]{PERMISSION}, PERMISSION_REQUEST_CODE);
             return true;
         }
-        return getFreshLocation(new SenderLocationListener(this));
+        if ("baidu".equals(mMapType)) {
+            // Baidu Map
+            return getFreshBaiduLocation(new SenderLocationListener(this));
+        } else {
+            // Google Map
+            return getFreshLocation(new SenderLocationListener(this));
+        }
     }
 
     @Override
@@ -199,5 +234,9 @@ public class LocationSender extends AttachmentSender {
         public void onConnectionFailed(ConnectionResult connectionResult) {
             if (Log.isLoggable(Log.VERBOSE)) Log.v("GoogleApiClient failed: " + connectionResult);
         }
+    }
+
+    public void setMapType(String mapType) {
+        this.mMapType = mapType;
     }
 }

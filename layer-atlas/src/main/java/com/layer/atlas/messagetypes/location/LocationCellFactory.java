@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.baidu.location.BDLocation;
 import com.layer.atlas.R;
 import com.layer.atlas.messagetypes.AtlasCellFactory;
 import com.layer.atlas.provider.ParticipantProvider;
@@ -29,6 +30,7 @@ import com.squareup.picasso.Transformation;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
 
 public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.CellHolder, LocationCellFactory.Location> implements View.OnClickListener {
@@ -44,11 +46,17 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
     private final Picasso mPicasso;
     private final Transformation mTransform;
 
-    public LocationCellFactory(Context context, Picasso picasso) {
+    private String mMapType;
+
+    private WeakReference<Context> mContext;
+
+    public LocationCellFactory(Context context, Picasso picasso, String mapType) {
         super(256 * 1024);
         mPicasso = picasso;
         float radius = context.getResources().getDimension(R.dimen.atlas_message_item_cell_radius);
         mTransform = new RoundedTransform(radius);
+        this.mMapType = mapType;
+        mContext = new WeakReference<>(context);
     }
 
     public static boolean isType(Message message) {
@@ -105,7 +113,7 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
         params.width = cellDims[0];
         params.height = cellDims[1];
         cellHolder.mProgressBar.show();
-        mPicasso.load("https://maps.googleapis.com/maps/api/staticmap?zoom=16&maptype=roadmap&scale=2&center=" + location.mLatitude + "," + location.mLongitude + "&markers=color:red%7C" + location.mLatitude + "," + location.mLongitude + "&size=" + mapWidth + "x" + mapHeight)
+        mPicasso.load(getStaticMapUrl(location.mLatitude, location.mLongitude, mapWidth, mapHeight))
                 .tag(PICASSO_TAG).placeholder(PLACEHOLDER).resize(cellDims[0], cellDims[1])
                 .transform(mTransform).into(cellHolder.mImageView, new Callback() {
             @Override
@@ -138,7 +146,13 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
     public void onClick(View v) {
         Location location = (Location) v.getTag();
         String encodedLabel = (location.mLabel == null) ? URLEncoder.encode("Shared Marker") : URLEncoder.encode(location.mLabel);
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + location.mLatitude + "," + location.mLongitude + "(" + encodedLabel + ")&z=16"));
+        Intent intent;
+        if ("baidu".equals(mMapType)) {
+            intent = new Intent();
+            intent.setData(Uri.parse("baidumap://map/marker?location=" + location.mLatitude + "," + location.mLongitude + "&title=Pinned Point"));
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + location.mLatitude + "," + location.mLongitude + "(" + encodedLabel + ")&z=16"));
+        }
         v.getContext().startActivity(intent);
     }
 
@@ -176,5 +190,16 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
             mProgressBar = (ContentLoadingProgressBar) view.findViewById(R.id.cell_progress);
             mTime = (TextView) view.findViewById(R.id.cell_time);
         }
+    }
+
+    public String getStaticMapUrl(double latitude, double longitude, int mapWidth, int mapHeight){
+        String staticMapUrl;
+        if ("baidu".equals(mMapType)){
+            staticMapUrl = "http://api.map.baidu.com/staticimage?center=" + longitude + "," + latitude + "&markers=" + longitude + "," + latitude;
+        } else {
+            staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&maptype=roadmap&scale=2&center=" + latitude + "," + longitude + "&markers=color:red%7C" + latitude + "," + longitude + "&size=" + mapWidth + "x" + mapHeight;
+        }
+
+        return staticMapUrl;
     }
 }

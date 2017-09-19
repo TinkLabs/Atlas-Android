@@ -64,6 +64,10 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$supportVersion"
     compile "com.android.support:appcompat-v7:$supportVersion"
     compile "com.android.support:design:$supportVersion"
+
+    compile project(':handy-map')
+
+    compile files('libs/BaiduLBS_Android.jar')
 }
 
 def sdkPom() {
