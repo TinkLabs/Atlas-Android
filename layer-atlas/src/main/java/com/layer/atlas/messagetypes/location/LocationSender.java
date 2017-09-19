@@ -151,7 +151,7 @@ public class LocationSender extends AttachmentSender {
             if (Log.isLoggable(Log.VERBOSE)) Log.v("Location permission denied");
             return;
         }
-        getFreshLocation(new SenderLocationListener(this));
+        requestSend();
     }
 
     /**
