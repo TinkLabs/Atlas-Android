@@ -55,17 +55,22 @@ public class LocationSender extends AttachmentSender {
 
     private String mMapType = "google";
 
-    public LocationSender(int titleResId, Integer iconResId, Activity activity) {
-        this(activity.getString(titleResId), iconResId, activity);
+    public LocationSender(int titleResId, Integer iconResId, Activity activity, String mapType) {
+        this(activity.getString(titleResId), iconResId, activity, mapType);
     }
 
-    public LocationSender(String title, Integer iconResId, Activity activity) {
+    public LocationSender(String title, Integer iconResId, Activity activity, String mapType) {
         super(title, iconResId);
         mActivity = new WeakReference<Activity>(activity);
+        this.mMapType = mapType;
         init(activity);
     }
 
     private void init(final Activity activity) {
+        if ("baidu".equals(mMapType)){
+            // No Need To Check Google Play Services For Using Baidu Map
+            return;
+        }
         // If the client has already been created, ensure connected and return.
         if (sGoogleApiClient != null) {
             if (!sGoogleApiClient.isConnected()) sGoogleApiClient.connect();
@@ -234,9 +239,5 @@ public class LocationSender extends AttachmentSender {
         public void onConnectionFailed(ConnectionResult connectionResult) {
             if (Log.isLoggable(Log.VERBOSE)) Log.v("GoogleApiClient failed: " + connectionResult);
         }
-    }
-
-    public void setMapType(String mapType) {
-        this.mMapType = mapType;
     }
 }
