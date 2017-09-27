@@ -126,25 +126,25 @@ public class LocationSender extends AttachmentSender {
     }
 
     private boolean getFreshBaiduLocation(final SenderLocationListener senderLocationListener) {
-        LocationClient locationClient = new LocationClient(mActivity.get().getApplicationContext());
+        final LocationClient locationClient = new LocationClient(mActivity.get().getApplicationContext());
         locationClient.registerLocationListener(new BDLocationListener() {
             @Override
             public void onReceiveLocation(BDLocation bdLocation) {
                 Location location = new Location("HandyProvider");
                 location.setLatitude(bdLocation.getLatitude());
                 location.setLongitude(bdLocation.getLongitude());
+                locationClient.unRegisterLocationListener(this);
+                locationClient.stop();
                 senderLocationListener.onLocationChanged(location);
             }
         });
-
         LocationClientOption lcOption = new LocationClientOption();
-        // bd09ll - Baidu Coordination
-        lcOption.setCoorType("bd09ll");
+        lcOption.setCoorType("bd09ll"); // bd09ll - Baidu Coordination
+        lcOption.setScanSpan(0);
         lcOption.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
         lcOption.setOpenGps(true);
         locationClient.setLocOption(lcOption);
         locationClient.start();
-
         return true;
     }
 
