@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.baidu.location.BDLocation;
 import com.layer.atlas.R;
 import com.layer.atlas.messagetypes.AtlasCellFactory;
 import com.layer.atlas.provider.ParticipantProvider;
@@ -128,7 +127,7 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
         });
 
         if (message.getSentAt() != null) {
-            String relativeDate = ((String) DateUtils.getRelativeTimeSpanString(message.getSentAt().getTime(),System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
+            String relativeDate = ((String) DateUtils.getRelativeTimeSpanString(message.getSentAt().getTime(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
             cellHolder.mTime.setText(relativeDate);
             cellHolder.mTime.setVisibility(View.VISIBLE);
 
@@ -147,13 +146,19 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
         Location location = (Location) v.getTag();
         String encodedLabel = (location.mLabel == null) ? URLEncoder.encode("Shared Marker") : URLEncoder.encode(location.mLabel);
         Intent intent;
+        Context context = v.getContext();
         if ("baidu".equals(mMapType)) {
             intent = new Intent();
             intent.setData(Uri.parse("baidumap://map/marker?location=" + location.mLatitude + "," + location.mLongitude + "&title=Pinned Point"));
-        } else {
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + location.mLatitude + "," + location.mLongitude + "(" + encodedLabel + ")&z=16"));
+            try {
+                context.startActivity(intent);
+                return;
+            } catch (Exception e) {
+                //ignore
+            }
         }
-        v.getContext().startActivity(intent);
+        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + location.mLatitude + "," + location.mLongitude + "(" + encodedLabel + ")&z=16"));
+        context.startActivity(intent);
     }
 
     @Override
@@ -192,9 +197,9 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
         }
     }
 
-    public String getStaticMapUrl(double latitude, double longitude, int mapWidth, int mapHeight){
+    public String getStaticMapUrl(double latitude, double longitude, int mapWidth, int mapHeight) {
         String staticMapUrl;
-        if ("baidu".equals(mMapType)){
+        if ("baidu".equals(mMapType)) {
             staticMapUrl = "http://api.map.baidu.com/staticimage?center=" + longitude + "," + latitude + "&markers=" + longitude + "," + latitude;
         } else {
             staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&maptype=roadmap&scale=2&center=" + latitude + "," + longitude + "&markers=color:red%7C" + latitude + "," + longitude + "&size=" + mapWidth + "x" + mapHeight;
