@@ -1,5 +1,6 @@
 package com.layer.atlas.messagetypes.location;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -153,8 +154,8 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
             try {
                 context.startActivity(intent);
                 return;
-            } catch (Exception e) {
-                //ignore
+            } catch (ActivityNotFoundException e) {
+                //ignore baidu map app not install.
             }
         }
         intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + location.mLatitude + "," + location.mLongitude + "(" + encodedLabel + ")&z=16"));
