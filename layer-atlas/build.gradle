@@ -26,6 +26,16 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
     }
+
+    buildTypes {
+        debug {
+            buildConfigField 'String', 'GOOGLE_MAPS_STATIC_API_KEY', '"AIzaSyBrMYKrrPGDsOkkRytJPV4HeE9C09-heb4"'
+        }
+
+        release {
+            buildConfigField 'String', 'GOOGLE_MAPS_STATIC_API_KEY', '"AIzaSyBrMYKrrPGDsOkkRytJPV4HeE9C09-heb4"'
+        }
+    }
 }
 
 repositories {

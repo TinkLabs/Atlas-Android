@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.layer.atlas.BuildConfig;
 import com.layer.atlas.R;
 import com.layer.atlas.messagetypes.AtlasCellFactory;
 import com.layer.atlas.provider.ParticipantProvider;
@@ -203,7 +204,7 @@ public class LocationCellFactory extends AtlasCellFactory<LocationCellFactory.Ce
         if ("baidu".equals(mMapType)) {
             staticMapUrl = "http://api.map.baidu.com/staticimage?center=" + longitude + "," + latitude + "&markers=" + longitude + "," + latitude;
         } else {
-            staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&maptype=roadmap&scale=2&center=" + latitude + "," + longitude + "&markers=color:red%7C" + latitude + "," + longitude + "&size=" + mapWidth + "x" + mapHeight;
+            staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap?zoom=16&maptype=roadmap&scale=2&center=" + latitude + "," + longitude + "&markers=color:red%7C" + latitude + "," + longitude + "&size=" + mapWidth + "x" + mapHeight + "&key=" + BuildConfig.GOOGLE_MAPS_STATIC_API_KEY;
         }
 
         return staticMapUrl;
